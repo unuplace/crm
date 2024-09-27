@@ -63,7 +63,7 @@ $user_data = get_user_data($pdo, $_SESSION['user_id']);
 <body>
     <?php include '../includes/header.php'; ?>
     <?php include '../includes/topnav.php'; ?>
-    <?php include '../includes/sidebar.php'; ?>
+    <!-- <?php include '../includes/sidebar.php'; ?> -->
     <div class="container-fluid">
         <div class="row">
             <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">

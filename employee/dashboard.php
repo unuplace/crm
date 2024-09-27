@@ -14,6 +14,35 @@ $start_date = date('Y-m-d', strtotime('-30 days')); // آخر 30 يوم
 $end_date = date('Y-m-d');
 $stats = get_employee_statistics($pdo, $_SESSION['user_id'], $start_date, $end_date);
 
+// الكود الخاص بالإحصائيات هنا
+$employee_id = $_SESSION['user_id'];
+$start_date = $_GET['start_date'] ?? date('Y-m-01');
+$end_date = $_GET['end_date'] ?? date('Y-m-d');
+$employee_data = get_user_data($pdo, $employee_id);
+
+$stats = get_employee_statistics($pdo, $employee_id, $start_date, $end_date);
+
+// الحصول على الأنشطة مع تطبيق التصفية والترقيم
+$visits = get_recent_visits($pdo, $employee_id);
+$total_visits = get_total_visits_count($pdo, $employee_id);
+
+
+// الحصول على عدد العملاء المحتملين للموظف المحدد
+// $total_clients = get_total_potential_clients_count($pdo, $filters['employee_id']);
+
+
+// الحصول على عدد العملاء المحتملين
+$total_clients = get_total_potential_clients_count($pdo);
+
+$total_customers = get_total_customers_count($pdo, $employee_id);
+
+// تحديد الفترة الزمنية للتقرير (افتراضيًا الشهر الحالي)
+$start_date = date('Y-m-01');
+$end_date = date('Y-m-t');
+
+$progress = get_employee_progress($pdo, $employee_id, $start_date, $end_date);
+
+
 
 check_login();
 if (is_admin()) {
@@ -30,7 +59,7 @@ $user_data = get_user_data($pdo, $_SESSION['user_id']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم الموظف - شركة التلاد للتطوير العقاري</title>
+    <title>لوحة تحكم الموظف</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
 </head>
@@ -66,21 +95,117 @@ $user_data = get_user_data($pdo, $_SESSION['user_id']);
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">إحصائيات اليوم</h5>
-                                    <form id="dailyStatsForm">
-                                    <div class="mb-3">
-                                        <label for="unitsSold" class="form-label">عدد الوحدات المباعة</label>
-                                        <input type="number" class="form-control" id="unitsSold" name="units_sold" required min="0">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="reservations" class="form-label">عدد الحجوزات</label>
-                                        <input type="number" class="form-control" id="reservations" name="reservations" required min="0">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="visits" class="form-label">عدد الزيارات</label>
-                                        <input type="number" class="form-control" id="visits" name="visits" required min="0">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">حفظ</button>
-                                    </form>
+                                    
+                                <div class="container mt-4">
+        <h2>إحصائيات الموظف</h2>
+        
+        <!-- <form method="GET" class="mb-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="start_date" class="form-label">تاريخ البداية</label>
+                    <input type="date" name="start_date" id="start_date" class="form-control" value="<?php echo $start_date; ?>">
+                </div>
+                <div class="col-md-4">
+                    <label for="end_date" class="form-label">تاريخ النهاية</label>
+                    <input type="date" name="end_date" id="end_date" class="form-control" value="<?php echo $end_date; ?>">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">عرض الإحصائيات</button>
+                </div>
+            </div>
+        </form> -->
+
+        <div class="container mt-4">
+        <h2>لوحة تحكم الموظف</h2>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h5>مرحبًا، <?php echo htmlspecialchars($employee_data['full_name']); ?></h5>
+                <p>المشروع: <?php echo htmlspecialchars(get_project_name($pdo, $employee_data['project_id'])); ?></p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">الاتصالات</h5>
+                        <p>الهدف: <?php echo $progress['call_target']; ?></p>
+                        <p>الإنجاز: <?php echo $progress['total_calls']; ?></p>
+                        <p>المتبقي: <?php echo $progress['remaining_calls']; ?></p>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: <?php echo $progress['call_progress']; ?>%" aria-valuenow="<?php echo $progress['call_progress']; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo number_format($progress['call_progress'], 2); ?>%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">المبيعات</h5>
+                        <p>الهدف: <?php echo $progress['sales_target']; ?></p>
+                        <p>الإنجاز: <?php echo $progress['total_sales']; ?></p>
+                        <p>المتبقي: <?php echo $progress['remaining_sales']; ?></p>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: <?php echo $progress['sales_progress']; ?>%" aria-valuenow="<?php echo $progress['sales_progress']; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo number_format($progress['sales_progress'], 2); ?>%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">الزيارات</h5>
+                        <p>الهدف: <?php echo $progress['visit_target']; ?></p>
+                        <p>الإنجاز: <?php echo $progress['total_visits']; ?></p>
+                        <p>المتبقي: <?php echo $progress['remaining_visits']; ?></p>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: <?php echo $progress['visit_progress']; ?>%" aria-valuenow="<?php echo $progress['visit_progress']; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo number_format($progress['visit_progress'], 2); ?>%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- نهاية الكود الجديد -->
+
+
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">إجمالي المبيعات</h5>
+                        <p class="card-text"><?php echo $total_customers; ?></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">إجمالي الحجوزات</h5>
+                        <p class="card-text"><?php echo $stats['total_reservations'] ?? 0; ?></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">عدد الزيارات</h5>
+                        <p class="card-text"><?php echo $total_visits; ?></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">عدد الاتصالات</h5>
+                        <p class="card-text"><?php echo $stats['total_communications'] ?? 0; ?></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+                                
+
                             </div>
                         </div>
                     </div>

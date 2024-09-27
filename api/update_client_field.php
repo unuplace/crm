@@ -36,13 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function transfer_to_customers($pdo, $client_id, $employee_id) {
     // الحصول على بيانات العميل المحتمل
-    $stmt = $pdo->prepare("SELECT name, email, phone, monthly_commitment, bank, sector FROM potential_clients WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT name, email, phone, monthly_commitment, bank, sector, status, notes, contact_date, suorce FROM potential_clients WHERE id = ?");
     $stmt->execute([$client_id]);
     $client = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($client) {
         // إدخال البيانات في جدول العملاء
-        $stmt = $pdo->prepare("INSERT INTO customers (name, email, phone, monthly_commitment, bank, sector, assigned_to) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO customers (name, email, phone, monthly_commitment, bank, sector, status, notes, contact_date, suorce assigned_to) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         return $stmt->execute([
             $client['name'],
             $client['email'],
@@ -50,6 +50,10 @@ function transfer_to_customers($pdo, $client_id, $employee_id) {
             $client['monthly_commitment'],
             $client['bank'],
             $client['sector'],
+            $client['status'],
+            $client['notes'],
+            $client['contact_date'],
+            $client['suorce'],
             $employee_id
         ]);
     }

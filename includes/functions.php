@@ -36,9 +36,12 @@ function get_user_data($pdo, $user_id) {
 // }
 
 function get_project_name($pdo, $project_id) {
+    if ($project_id === null) {
+        return 'غير محدد';
+    }
     $stmt = $pdo->prepare("SELECT name FROM projects WHERE id = ?");
     $stmt->execute([$project_id]);
-    $result = $stmt->fetch();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
     return $result ? $result['name'] : 'غير محدد';
 }
 
@@ -62,16 +65,90 @@ function delete_project($pdo, $id) {
 //     return $stmt->fetchAll();
 // }
 
+// function add_employee($pdo, $data) {
+//     $hashed_password = password_hash($data['password'], PASSWORD_DEFAULT);
+//     $stmt = $pdo->prepare("INSERT INTO users (username, password, full_name, email, phone, role, project_id, daily_call_target, monthly_sales_target, monthly_visit_target) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+//     $stmt->execute([$data['username'], $hashed_password, $data['full_name'], $data['email'], $data['phone'], $data['role'], $data['project_id'], $data['daily_call_target'], $data['monthly_sales_target'], $data['monthly_visit_target']]);
+// }
+
+// function edit_employee($pdo, $data) {
+//     $stmt = $pdo->prepare("UPDATE users SET full_name = ?, email = ?, phone = ?, project_id = ?, daily_call_target = ?, monthly_sales_target = ?, monthly_visit_target = ? WHERE id = ?");
+//     $stmt->execute([$data['full_name'], $data['email'], $data['phone'], $data['project_id'], $data['daily_call_target'], $data['monthly_sales_target'], $data['monthly_visit_target'], $data['id']]);
+// }
+
 function add_employee($pdo, $data) {
     $hashed_password = password_hash($data['password'], PASSWORD_DEFAULT);
-    $stmt = $pdo->prepare("INSERT INTO users (username, password, full_name, email, phone, role, project_id, daily_call_target, monthly_sales_target, monthly_visit_target) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$data['username'], $hashed_password, $data['full_name'], $data['email'], $data['phone'], $data['role'], $data['project_id'], $data['daily_call_target'], $data['monthly_sales_target'], $data['monthly_visit_target']]);
+    $sql = "INSERT INTO users (username, password, full_name, email, phone, role, project_id, daily_call_target, monthly_call_target, monthly_sales_target, monthly_visit_target) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute([
+        $data['username'], $hashed_password, $data['full_name'], $data['email'], $data['phone'],
+        $data['role'], $data['project_id'], $data['daily_call_target'], $data['monthly_call_target'],
+        $data['monthly_sales_target'], $data['monthly_visit_target']
+    ]);
 }
 
 function edit_employee($pdo, $data) {
-    $stmt = $pdo->prepare("UPDATE users SET full_name = ?, email = ?, phone = ?, project_id = ?, daily_call_target = ?, monthly_sales_target = ?, monthly_visit_target = ? WHERE id = ?");
-    $stmt->execute([$data['full_name'], $data['email'], $data['phone'], $data['project_id'], $data['daily_call_target'], $data['monthly_sales_target'], $data['monthly_visit_target'], $data['id']]);
+    $sql = "UPDATE users SET 
+            full_name = :full_name, 
+            email = :email, 
+            phone = :phone, 
+            role = :role, 
+            project_id = :project_id, 
+            daily_call_target = :daily_call_target, 
+            monthly_call_target = :monthly_call_target, 
+            monthly_sales_target = :monthly_sales_target, 
+            monthly_visit_target = :monthly_visit_target 
+            WHERE id = :id";
+    
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute([
+        ':full_name' => $data['full_name'],
+        ':email' => $data['email'],
+        ':phone' => $data['phone'],
+        ':role' => $data['role'],
+        ':project_id' => $data['project_id'] ?: null,
+        ':daily_call_target' => $data['daily_call_target'],
+        ':monthly_call_target' => $data['monthly_call_target'],
+        ':monthly_sales_target' => $data['monthly_sales_target'],
+        ':monthly_visit_target' => $data['monthly_visit_target'],
+        ':id' => $data['id']
+    ]);
 }
+
+function get_employee_progress($pdo, $employee_id, $start_date, $end_date) {
+    // احسب التقدم في الأهداف
+    $sql = "SELECT 
+                (SELECT COUNT(*) FROM communication WHERE employee_id = ? AND communication_date BETWEEN ? AND ?) as total_calls,
+                (SELECT COUNT(*) FROM sales WHERE employee_id = ? AND sale_date BETWEEN ? AND ?) as total_sales,
+                (SELECT COUNT(*) FROM visits WHERE employee_id = ? AND visit_date BETWEEN ? AND ?) as total_visits,
+                daily_call_target, monthly_call_target, monthly_sales_target, monthly_visit_target
+            FROM users 
+            WHERE id = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$employee_id, $start_date, $end_date, $employee_id, $start_date, $end_date, $employee_id, $start_date, $end_date, $employee_id]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    // احسب النسب المئوية للتقدم
+    $days_in_period = (strtotime($end_date) - strtotime($start_date)) / (60 * 60 * 24) + 1;
+    $call_target = $result['daily_call_target'] * $days_in_period;
+    
+    return [
+        'call_progress' => ($result['total_calls'] / $call_target) * 100,
+        'sales_progress' => ($result['total_sales'] / $result['monthly_sales_target']) * 100,
+        'visit_progress' => ($result['total_visits'] / $result['monthly_visit_target']) * 100,
+        'remaining_calls' => max(0, $call_target - $result['total_calls']),
+        'remaining_sales' => max(0, $result['monthly_sales_target'] - $result['total_sales']),
+        'remaining_visits' => max(0, $result['monthly_visit_target'] - $result['total_visits']),
+        'total_calls' => $result['total_calls'],
+        'total_sales' => $result['total_sales'],
+        'total_visits' => $result['total_visits'],
+        'call_target' => $call_target,
+        'sales_target' => $result['monthly_sales_target'],
+        'visit_target' => $result['monthly_visit_target']
+    ];
+}
+
 
 function delete_employee($pdo, $id) {
     $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
@@ -430,8 +507,8 @@ function get_total_activities_count($pdo, $filters = []) {
 }
 
 function get_all_employees($pdo) {
-    $stmt = $pdo->query("SELECT id, full_name FROM users WHERE role = 'employee' ORDER BY full_name");
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $pdo->query("SELECT id, username, full_name, email, phone, role, project_id, daily_call_target, monthly_call_target, monthly_sales_target, monthly_visit_target FROM users WHERE role = 'employee' ORDER BY full_name");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: []; // إرجاع مصفوفة فارغة إذا لم يتم العثور على نتائج
 }
 
 function get_client_name($pdo, $client_id) {
@@ -518,44 +595,6 @@ function get_total_visits_count($pdo, $filters = []) {
     return $stmt->fetchColumn();
 }
 
-/**
- * Admin > reports.php
- * تقارير العملاء
- */
-function get_recent_customers($pdo, $page = 1, $per_page = 20, $filters = []) {
-    $offset = ($page - 1) * $per_page;
-    
-    $sql = "SELECT * FROM customers WHERE 1=1 ";
-    $params = [];
-    
-    if (!empty($filters['employee_id'])) {
-        $sql .= "AND assigned_to = :employee_id ";
-        $params[':employee_id'] = $filters['employee_id'];
-    }
-    
-    if (!empty($filters['start_date'])) {
-        $sql .= "AND created_at >= :start_date ";
-        $params[':start_date'] = $filters['start_date'] . ' 00:00:00';
-    }
-    
-    if (!empty($filters['end_date'])) {
-        $sql .= "AND created_at <= :end_date ";
-        $params[':end_date'] = $filters['end_date'] . ' 23:59:59';
-    }
-    
-    $sql .= "ORDER BY created_at DESC LIMIT :offset, :per_page";
-    
-    $stmt = $pdo->prepare($sql);
-    foreach ($params as $key => $value) {
-        $stmt->bindValue($key, $value);
-    }
-    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-    $stmt->bindValue(':per_page', $per_page, PDO::PARAM_INT);
-    $stmt->execute();
-    
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
 function get_all_customers($pdo) {
     $stmt = $pdo->query("SELECT * FROM customers ORDER BY created_at DESC");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -612,4 +651,42 @@ function get_total_potential_clients_count($pdo, $employee_id = null) {
     
     $stmt->execute();
     return $stmt->fetchColumn();
+}
+
+/**
+ * Admin > reports.php
+ * تقارير العملاء
+ */
+function get_recent_customers($pdo, $page = 1, $per_page = 20, $filters = []) {
+    $offset = ($page - 1) * $per_page;
+    
+    $sql = "SELECT * FROM customers WHERE 1=1 ";
+    $params = [];
+    
+    if (!empty($filters['employee_id'])) {
+        $sql .= "AND assigned_to = :employee_id ";
+        $params[':employee_id'] = $filters['employee_id'];
+    }
+    
+    if (!empty($filters['start_date'])) {
+        $sql .= "AND created_at >= :start_date ";
+        $params[':start_date'] = $filters['start_date'] . ' 00:00:00';
+    }
+    
+    if (!empty($filters['end_date'])) {
+        $sql .= "AND created_at <= :end_date ";
+        $params[':end_date'] = $filters['end_date'] . ' 23:59:59';
+    }
+    
+    $sql .= "ORDER BY created_at DESC LIMIT :offset, :per_page";
+    
+    $stmt = $pdo->prepare($sql);
+    foreach ($params as $key => $value) {
+        $stmt->bindValue($key, $value);
+    }
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->bindValue(':per_page', $per_page, PDO::PARAM_INT);
+    $stmt->execute();
+    
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

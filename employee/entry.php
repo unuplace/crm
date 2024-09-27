@@ -3,10 +3,17 @@ require_once '../includes/functions.php';
 require_once '../config/database.php';
 
 session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'employee') {
     header('Location: /telad/auth/login.php');
     exit();
 }
+
+$employee_id = $_SESSION['user_id'];
+$clients = get_employee_potential_clients($pdo, $employee_id);
+?>
+
+<!-- الكود الجديد -->
+<?php
 
 // إضافة عميل محتمل جديد
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_client'])) {
@@ -42,65 +49,30 @@ $potential_clients = get_all_potential_clients($pdo);
 $employees = get_all_employees($pdo);
 ?>
 
+
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة العملاء المحتملين</title>
-    <!-- إضافة روابط CSS الخاصة بك هنا -->
+    <title>استقبال العملاء</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/x-editable@1.5.1/dist/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
 </head>
 <body>
 <?php include '../includes/header.php'; ?>
-    <?php include '../includes/topnav.php'; ?>
+    <?php include '../includes/employee_topnav.php'; ?>
     
+
+
+
+
     <div class="container mt-4">
-        <h2>إدارة العملاء المحتملين</h2>
-        
-        <?php if (isset($success_message)): ?>
-            <div class="alert alert-success"><?php echo $success_message; ?></div>
-        <?php endif; ?>
-        
-        <?php if (isset($error_message)): ?>
-            <div class="alert alert-danger"><?php echo $error_message; ?></div>
-        <?php endif; ?>
-        
-        <div class="container mt-4">
-    
-    <!-- أضف هذا الزر قبل نموذج إضافة العميل المحتمل -->
-    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#importClientsModal">
-        استيراد العملاء من ملف Excel
-    </button>
-    
-    <!-- باقي الكود ... -->
-<!-- نافذة منبثقة لاستيراد العملاء -->
-<div class="modal fade" id="importClientsModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">استيراد العملاء من ملف Excel</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="importClientsForm" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="excelFile" class="form-label">اختر ملف Excel</label>
-                        <input type="file" class="form-control" id="excelFile" name="excelFile" accept=".xlsx, .xls" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">استيراد</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
-</div>
-
-        <!-- نموذج إضافة عميل محتمل جديد -->
-        <h3>إضافة عميل محتمل جديد</h3>
+            <!-- نموذج إضافة عميل محتمل جديد -->
+            <h3>إضافة عميل محتمل جديد</h3>
         <form method="POST">
             <div class="row">
                 <div class="col-md-4 mb-3">
@@ -178,10 +150,12 @@ $employees = get_all_employees($pdo);
             </div>
             <button type="submit" name="add_client" class="btn btn-primary">إضافة العميل المحتمل</button>
         </form>
+
+
+
+        <h2>العملاء المحتملين</h2>
         
-       <!-- جدول العملاء المحتملين -->
-<h3 class="mt-5">قائمة العملاء المحتملين</h3>
-<div class="table-responsive mt-4">
+        <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -193,15 +167,12 @@ $employees = get_all_employees($pdo);
                         <th>البنك</th>
                         <th>القطاع</th>
                         <th>الحالة</th>
-                        <th>المصدر</th>
                         <th>ملاحظات</th>
-                        <th>الموظف المعين</th>
                         <th>تاريخ الاتصال</th>
-                        <th>الإجراءات</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($potential_clients as $client): ?>
+                    <?php foreach ($clients as $client): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($client['name']); ?></td>
                         <td><?php echo htmlspecialchars($client['phone']); ?></td>
@@ -210,25 +181,9 @@ $employees = get_all_employees($pdo);
                         <td><a href="#" class="editable" data-type="number" data-pk="<?php echo $client['id']; ?>" data-name="monthly_commitment"><?php echo htmlspecialchars($client['monthly_commitment']); ?></a></td>
                         <td><a href="#" class="editable" data-type="text" data-pk="<?php echo $client['id']; ?>" data-name="bank"><?php echo htmlspecialchars($client['bank']); ?></a></td>
                         <td><a href="#" class="editable" data-type="text" data-pk="<?php echo $client['id']; ?>" data-name="sector"><?php echo htmlspecialchars($client['sector']); ?></a></td>
-                        <td><a href="#" class="editable" data-type="select" data-pk="<?php echo $client['id']; ?>" data-name="status" data-source='{"جديد":"جديد","متابعة":"متابعة","مهتم":"مهتم","غير مهتم":"غير مهتم","تم الحجز":"تم الحجز","تم البيع":"تم البيع"}'><?php echo htmlspecialchars($client['status']); ?></a></td>
-                        <td><a href="#" class="editable" data-type="text" data-pk="<?php echo $client['id']; ?>" data-name="source"><?php echo htmlspecialchars($client['source']); ?></a></td>
                         <td><a href="#" class="editable" data-type="text" data-pk="<?php echo $client['id']; ?>" data-name="notes"><?php echo htmlspecialchars($client['notes']); ?></a></td>
-
-                        <td>
-                            <a href="#" class="editable" data-type="select" data-pk="<?php echo $client['id']; ?>" data-name="assigned_to" data-source='<?php echo json_encode(array_reduce($employees, function($result, $employee) {
-                                $result[$employee['id']] = $employee['full_name'];
-                                return $result;
-                            }, [])); ?>'>
-                                <?php echo htmlspecialchars(get_employee_name($pdo, $client['assigned_to'])); ?>
-                            </a>
-                        </td>
+                        <td><a href="#" class="editable" data-type="select" data-pk="<?php echo $client['id']; ?>" data-name="status" data-source='{"جديد":"جديد","متابعة":"متابعة","مهتم":"مهتم","غير مهتم":"غير مهتم","تم الحجز":"تم الحجز","تم البيع":"تم البيع"}'><?php echo htmlspecialchars($client['status']); ?></a></td>
                         <td><a href="#" class="editable" data-type="date" data-pk="<?php echo $client['id']; ?>" data-name="contact_date"><?php echo htmlspecialchars($client['contact_date']); ?></a></td>
-                        <td>
-                            <form method="POST" class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذا العميل المحتمل؟');">
-                                <input type="hidden" name="client_id" value="<?php echo $client['id']; ?>">
-                                <button type="submit" name="delete_client" class="btn btn-sm btn-danger">حذف</button>
-                            </form>
-                        </td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -247,17 +202,32 @@ $employees = get_all_employees($pdo);
         $('.editable').editable({
             url: '/telad/api/update_client_field.php',
             params: function(params) {
-                params.admin_id = <?php echo $_SESSION['user_id']; ?>;
+                params.employee_id = <?php echo $employee_id; ?>;
                 return params;
             }
         });
     });
     </script>
-
-<?php include '../includes/footer.php'; ?>
+<script>
+$(document).ready(function() {
+    $.fn.editable.defaults.mode = 'inline';
+    $.fn.editable.defaults.ajaxOptions = {method: "POST"};
+    
+    $('.editable').editable({
+        url: '/telad/api/update_client_field.php',
+        params: function(params) {
+            params.employee_id = <?php echo $_SESSION['user_id']; ?>;
+            if (params.name === 'status') {
+                params.notes = prompt("أدخل ملاحظات حول تغيير الحالة:");
+            }
+            return params;
+        }
+    });
+});
+</script>
+        <?php include '../includes/footer.php'; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../assets/js/potential_clients.js"></script>
-
 </body>
 </html>

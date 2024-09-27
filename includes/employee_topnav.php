@@ -11,12 +11,15 @@
         </li>
         <li class="nav-item">
           <a class="nav-link <?php echo ($_SERVER['PHP_SELF'] == '/telad/employee/visits.php') ? 'active' : ''; ?>" href="/telad/employee/visits.php">الزيارات</a>
+          <li class="nav-item">
+          <a class="nav-link <?php echo ($_SERVER['PHP_SELF'] == '/telad/employee/entry.php') ? 'active' : ''; ?>" href="/telad/employee/entry.php">الدخول</a>
+        </li>
         </li>
         <li class="nav-item">
           <a class="nav-link <?php echo ($_SERVER['PHP_SELF'] == '/telad/employee/potential_clients.php') ? 'active' : ''; ?>" href="/telad/employee/potential_clients.php">العملاء المحتملين</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?php echo ($_SERVER['PHP_SELF'] == '/telad/employee/statistics.php') ? 'active' : ''; ?>" href="/telad/employee/statistics.php">الإحصائيات</a>
+          <a class="nav-link <?php echo ($_SERVER['PHP_SELF'] == '/telad/employee/statistics.php') ? 'active' : ''; ?>" href="/telad/employee/statistics.php">السجل</a>
         </li>
       </ul>
       <ul class="navbar-nav ms-auto">

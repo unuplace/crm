@@ -93,14 +93,13 @@ $total_customers = get_total_customers_count($pdo, $employee_id);
                 </div>
             </div>
         </form>
-        <h5 class="card-title">عدد العملاء: <?php echo $total_customers; ?></h5>
 
         <div class="row">
             <div class="col-md-3 mb-4">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">إجمالي المبيعات</h5>
-                        <p class="card-text"><?php echo $stats['total_sales'] ?? 0; ?></p>
+                        <p class="card-text"><?php echo $total_customers; ?></p>
                     </div>
                 </div>
             </div>

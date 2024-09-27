@@ -32,11 +32,11 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $per_page = 20;
 
 // جمع معايير التصفية
-// $filters = [
-//     'employee_id' => isset($_GET['employee_id']) ? $_GET['employee_id'] : null,
-//     'start_date' => isset($_GET['start_date']) ? $_GET['start_date'] : null,
-//     'end_date' => isset($_GET['end_date']) ? $_GET['end_date'] : null,
-// ];
+$filters = [
+    'employee_id' => isset($_GET['employee_id']) ? $_GET['employee_id'] : null,
+    'start_date' => isset($_GET['start_date']) ? $_GET['start_date'] : null,
+    'end_date' => isset($_GET['end_date']) ? $_GET['end_date'] : null,
+];
 
 // الحصول على الأنشطة مع تطبيق التصفية والترقيم
 $activities = get_recent_activities($pdo, $page, $per_page, $filters);
@@ -48,8 +48,8 @@ $employees = get_all_employees($pdo);
 
 
 // الحصول على الأنشطة مع تطبيق التصفية والترقيم
-// $visits = get_recent_visits($pdo, $page, $per_page, $filters);
-// $total_visits = get_total_visits_count($pdo, $filters);
+$visits = get_recent_visits($pdo, $page, $per_page, $filters);
+$total_visits = get_total_visits_count($pdo, $filters);
 
 
 // الحصول على عدد العملاء المحتملين للموظف المحدد
@@ -59,10 +59,14 @@ $total_clients = get_total_potential_clients_count($pdo, $filters['employee_id']
 // الحصول على عدد العملاء المحتملين
 $total_clients = get_total_potential_clients_count($pdo);
 
+// تحديد الفترة الزمنية للتقرير (افتراضيًا الشهر الحالي)
+$start_date = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-01');
+$end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-t');
+
+
 // الحصول على جميع العملاء
 // $customers = get_all_customers($pdo);
 $customers = get_recent_customers($pdo, $page, $per_page, $filters);
-
 // $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-01');
 // $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
 
@@ -82,7 +86,7 @@ $customers = get_recent_customers($pdo, $page, $per_page, $filters);
 <body>
     <?php include '../includes/header.php'; ?>
     <?php include '../includes/topnav.php'; ?>
-    <?php include '../includes/sidebar.php'; ?>
+    <!-- <?php include '../includes/sidebar.php'; ?> -->
     <div class="container-fluid">
         <div class="row">
             <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
@@ -93,77 +97,14 @@ $customers = get_recent_customers($pdo, $page, $per_page, $filters);
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">التقارير</h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
-                        <form class="row g-3" method="GET">
-                            <div class="col-auto">
-                                <input type="date" class="form-control" name="start_date" value="<?php echo $start_date; ?>">
-                            </div>
-                            <div class="col-auto">
-                                <input type="date" class="form-control" name="end_date" value="<?php echo $end_date; ?>">
-                            </div>
-                            <div class="col-auto">
-                                <button type="submit" class="btn btn-primary">تطبيق</button>
-                            </div>
-                        </form>
+                    
+
                     </div>
+
                 </div>
 
-                <h3>تقارير الموظفين</h3>
-                <div class="table-responsive">
-                    <table class="table table-striped table-sm">
-                        <thead>
-                            <tr>
-                                <th>اسم الموظف</th>
-                                <th>المبيعات</th>
-                                <th>الحجوزات</th>
-                                <th>الاتصالات</th>
-                                <th>نسبة تحقيق الهدف</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($employee_reports as $report): ?>
-                            <tr>
-                                <td><?php echo $report['full_name']; ?></td>
-                                <td><?php echo $report['total_sales']; ?></td>
-                                <td><?php echo $report['total_amount']; ?></td>
-                                <td><?php echo $report['total_visits']; ?></td>
-                                <td><?php echo $report['target_achievement']; ?>%</td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
 
-                <h3 class="mt-5">تقارير المشاريع</h3>
-                <div class="table-responsive">
-                    <table class="table table-striped table-sm">
-                        <thead>
-                            <tr>
-                                <th>اسم المشروع</th>
-                                <th>المبيعات</th>
-                                <th>الحجوزات</th>
-                                <th>نسبة الإنجاز</th>
-                                <th>المتبقي للهدف</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($project_reports as $report): ?>
-                            <tr>
-                                <td><?php echo $report['name']; ?></td>
-                                <td><?php echo $report['sales']; ?></td>
-                                <td><?php echo $report['reservations']; ?></td>
-                                <td><?php echo $report['progress']; ?>%</td>
-                                <td><?php echo $report['remaining_target']; ?></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-
-
-
-                    <div class="container mt-4">
-        <h2>تقارير الزيارات</h2>
-        
-        <form class="mb-4" method="GET">
+                <form class="mb-4" method="GET">
             <div class="row">
                 <div class="col-md-3">
                     <select name="employee_id" class="form-select">
@@ -196,6 +137,76 @@ $customers = get_recent_customers($pdo, $page, $per_page, $filters);
                 </div>
             </div>
         </form>
+
+                <h3>أداء الموظفين</h3>
+
+                    <div class="container mt-4">
+        
+                    <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>الموظف</th>
+                        <th>الاتصالات (الهدف/الإنجاز)</th>
+                        <th>المبيعات (الهدف/الإنجاز)</th>
+                        <th>الزيارات (الهدف/الإنجاز)</th>
+                        <th>نسبة الإنجاز (الاتصالات)</th>
+                        <th>نسبة الإنجاز (المبيعات)</th>
+                        <th>نسبة الإنجاز (الزيارات)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($employees as $employee): 
+                        $progress = get_employee_progress($pdo, $employee['id'], $start_date, $end_date);
+                    ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($employee['full_name']); ?></td>
+                        <td><?php echo $progress['call_target'] . ' / ' . $progress['total_calls']; ?></td>
+                        <td><?php echo $progress['sales_target'] . ' / ' . $progress['total_sales']; ?></td>
+                        <td><?php echo $progress['visit_target'] . ' / ' . $progress['total_visits']; ?></td>
+                        <td><?php echo number_format($progress['call_progress'], 2) . '%'; ?></td>
+                        <td><?php echo number_format($progress['sales_progress'], 2) . '%'; ?></td>
+                        <td><?php echo number_format($progress['visit_progress'], 2) . '%'; ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+                </div>
+
+                <h3 class="mt-5">تقارير المشاريع</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th>اسم المشروع</th>
+                                <th>المبيعات</th>
+                                <th>الحجوزات</th>
+                                <th>نسبة الإنجاز</th>
+                                <th>المتبقي للهدف</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($project_reports as $report): ?>
+                            <tr>
+                                <td><?php echo $report['name']; ?></td>
+                                <td><?php echo $report['sales']; ?></td>
+                                <td><?php echo $report['reservations']; ?></td>
+                                <td><?php echo $report['progress']; ?>%</td>
+                                <td><?php echo $report['remaining_target']; ?></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+
+
+
+                    <div class="container mt-4">
+        <h2>تقارير الزيارات</h2>
+        
         
         <!-- العداد -->
         <div class="row mb-4">
@@ -260,30 +271,6 @@ $customers = get_recent_customers($pdo, $page, $per_page, $filters);
 
     <div class="container mt-4">
         <h2>سجل النشاط</h2>
-        
-        <!-- <form class="mb-4" method="GET">
-            <div class="row">
-                <div class="col-md-3">
-                    <select name="employee_id" class="form-select">
-                        <option value="">جميع الموظفين</option>
-                        <?php foreach ($employees as $employee): ?>
-                            <option value="<?php echo $employee['id']; ?>" <?php echo $filters['employee_id'] == $employee['id'] ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($employee['full_name']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <input type="date" name="start_date" class="form-control" value="<?php echo $filters['start_date']; ?>" placeholder="تاريخ البداية">
-                </div>
-                <div class="col-md-3">
-                    <input type="date" name="end_date" class="form-control" value="<?php echo $filters['end_date']; ?>" placeholder="تاريخ النهاية">
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary">تصفية</button>
-                </div>
-            </div>
-        </form> -->
         
         <div class="table-responsive">
             <table class="table table-striped">
@@ -356,100 +343,6 @@ $customers = get_recent_customers($pdo, $page, $per_page, $filters);
         </div>
     </div>
 
-<!-- نهاية جدوال العملاء -->
-
-                    <!-- <div class="container mt-4">
-    <h2>سجل النشاط</h2>
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>الموظف</th>
-                    <th>العميل المحتمل</th>
-                    <th>تاريخ التواصل</th>
-                    <th>الحالة الجديدة</th>
-                    <th>الملاحظات</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $activities = get_recent_activities($pdo);
-                foreach ($activities as $activity):
-                ?>
-                <tr>
-                    <td><?php echo htmlspecialchars(get_employee_name($pdo, $activity['employee_id'])); ?></td>
-                    <td><?php echo htmlspecialchars(get_client_name($pdo, $activity['potential_client_id'])); ?></td>
-                    <td><?php echo htmlspecialchars($activity['communication_date']); ?></td>
-                    <td><?php echo htmlspecialchars($activity['new_status']); ?></td>
-                    <td><?php echo htmlspecialchars($activity['notes']); ?></td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div> -->
-
-    <!-- <?php
-$employees = get_all_employees($pdo);
-$selected_employee = isset($_GET['employee_id']) ? $_GET['employee_id'] : null;
-$visits = get_recent_visits($pdo, 50, $selected_employee);
-?> -->
-
-<!-- <form class="mb-4" method="GET">
-    <div class="row">
-        <div class="col-md-4">
-            <select name="employee_id" class="form-select">
-                <option value="">جميع الموظفين</option>
-                <?php foreach ($employees as $employee): ?>
-                    <option value="<?php echo $employee['id']; ?>" <?php echo $selected_employee == $employee['id'] ? 'selected' : ''; ?>>
-                        <?php echo htmlspecialchars($employee['full_name']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-primary">تصفية</button>
-        </div>
-    </div>
-</form> -->
-<!-- 
-    <div class="container mt-4">
-        <h2>تقارير الزيارات</h2>
-        
-        <div class="table-responsive mt-4">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>الموظف</th>
-                        <th>تاريخ الزيارة</th>
-                        <th>الشركة</th>
-                        <th>القسم</th>
-                        <th>المسؤول</th>
-                        <th>الجوال</th>
-                        <th>وصف الزيارة</th>
-                        <th>التوصيات</th>
-                        <th>المشروع</th>
-                        <th>ملاحظات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($visits as $visit): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($visit['employee_name']); ?></td>
-                        <td><?php echo htmlspecialchars($visit['visit_date']); ?></td>
-                        <td><?php echo htmlspecialchars($visit['company_name']); ?></td>
-                        <td><?php echo htmlspecialchars($visit['department']); ?></td>
-                        <td><?php echo htmlspecialchars($visit['contact_name']); ?></td>
-                        <td><?php echo htmlspecialchars($visit['contact_phone']); ?></td>
-                        <td><?php echo htmlspecialchars($visit['description']); ?></td>
-                        <td><?php echo htmlspecialchars($visit['recommendations']); ?></td>
-                        <td><?php echo htmlspecialchars($visit['project_name']); ?></td>
-                        <td><?php echo htmlspecialchars($visit['notes']); ?></td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    </div> -->
 
 </div>
                 </div>
