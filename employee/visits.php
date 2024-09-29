@@ -4,7 +4,7 @@ require_once '../config/database.php';
 
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'employee') {
-    header('Location: /telad/auth/login.php');
+    header('Location: /crm/auth/login.php');
     exit();
 }
 

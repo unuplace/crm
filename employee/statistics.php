@@ -1,10 +1,10 @@
 <?php
-require_once '../includes/functions.php';
+require_once '../includes/employee_functions.php';
 require_once '../config/database.php';
 
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'employee') {
-    header('Location: /telad/auth/login.php');
+    header('Location: /crm/auth/login.php');
     exit();
 }
 
@@ -45,7 +45,7 @@ $total_pages = ceil($total_activities / $per_page);
 
 
 // الحصول على الأنشطة مع تطبيق التصفية والترقيم
-$visits = get_recent_visits($pdo, $page, $per_page, $filters);
+$visits = get_recent_visits($pdo, $page, $per_page, $filters, $employee_id);
 $total_visits = get_total_visits_count($pdo, $filters);
 
 

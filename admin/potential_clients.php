@@ -4,7 +4,7 @@ require_once '../config/database.php';
 
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: /telad/auth/login.php');
+    header('Location: /crm/auth/login.php');
     exit();
 }
 
@@ -245,7 +245,7 @@ $employees = get_all_employees($pdo);
         $.fn.editable.defaults.ajaxOptions = {method: "POST"};
         
         $('.editable').editable({
-            url: '/telad/api/update_client_field.php',
+            url: '/crm/api/update_client_field.php',
             params: function(params) {
                 params.admin_id = <?php echo $_SESSION['user_id']; ?>;
                 return params;
