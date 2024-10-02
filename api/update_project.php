@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 <?php
 require_once '../includes/functions.php';
 require_once '../config/database.php';
@@ -30,4 +31,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     http_response_code(405);
     echo json_encode(['success' => false, 'message' => 'Method Not Allowed']);
 >>>>>>> 294e1ee0d7e1c090a8e15fbd9d5b7b0df47c69d8
+=======
+<?php
+require_once '../includes/functions.php';
+require_once '../config/database.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $result = update_project($pdo, $_POST);
+    echo $result ? 'success' : 'error';
+} else {
+    echo 'error';
+>>>>>>> e1678e952034126bff7fe0de6ce40fc5897e8c6c
 }

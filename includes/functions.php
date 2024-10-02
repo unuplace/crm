@@ -114,7 +114,7 @@ function edit_employee($pdo, $data) {
             role = :role, 
             project_id = :project_id, 
             daily_call_target = :daily_call_target, 
-            -- monthly_call_target = :monthly_call_target, 
+            monthly_call_target = :monthly_call_target, 
             monthly_sales_target = :monthly_sales_target, 
             monthly_visit_target = :monthly_visit_target 
             WHERE id = :id";
@@ -127,7 +127,7 @@ function edit_employee($pdo, $data) {
         ':role' => $data['role'],
         ':project_id' => $data['project_id'] ?: null,
         ':daily_call_target' => $data['daily_call_target'],
-        // ':monthly_call_target' => $data['monthly_call_target'],
+        ':monthly_call_target' => $data['monthly_call_target'],
         ':monthly_sales_target' => $data['monthly_sales_target'],
         ':monthly_visit_target' => $data['monthly_visit_target'],
         ':id' => $data['id']
@@ -140,7 +140,7 @@ function get_employee_progress($pdo, $employee_id, $start_date, $end_date) {
                 (SELECT COUNT(*) FROM communication WHERE employee_id = ? AND communication_date BETWEEN ? AND ?) as total_calls,
                 (SELECT COUNT(*) FROM sales WHERE employee_id = ? AND sale_date BETWEEN ? AND ?) as total_sales,
                 (SELECT COUNT(*) FROM visits WHERE employee_id = ? AND visit_date BETWEEN ? AND ?) as total_visits,
-                daily_call_target, monthly_sales_target, monthly_visit_target
+                daily_call_target, monthly_call_target, monthly_sales_target, monthly_visit_target
             FROM users 
             WHERE id = ?";
     $stmt = $pdo->prepare($sql);
@@ -525,7 +525,7 @@ function get_total_activities_count($pdo, $filters = []) {
 }
 
 function get_all_employees($pdo) {
-    $stmt = $pdo->query("SELECT id, username, full_name, email, phone, role, project_id, daily_call_target, monthly_sales_target, monthly_visit_target FROM users WHERE role = 'employee' ORDER BY full_name");
+    $stmt = $pdo->query("SELECT id, username, full_name, email, phone, role, project_id, daily_call_target, monthly_call_target, monthly_sales_target, monthly_visit_target FROM users WHERE role = 'employee' ORDER BY full_name");
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: []; // إرجاع مصفوفة فارغة إذا لم يتم العثور على نتائج
 }
 

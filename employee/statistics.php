@@ -1,5 +1,5 @@
 <?php
-require_once '../includes/employee_functions.php';
+require_once '../includes/functions.php';
 require_once '../config/database.php';
 
 session_start();
@@ -45,7 +45,7 @@ $total_pages = ceil($total_activities / $per_page);
 
 
 // الحصول على الأنشطة مع تطبيق التصفية والترقيم
-$visits = get_recent_visits($pdo, $page, $per_page, $filters, $employee_id);
+$visits = get_recent_visits($pdo, $page, $per_page, $filters);
 $total_visits = get_total_visits_count($pdo, $filters);
 
 
