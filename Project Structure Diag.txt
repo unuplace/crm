@@ -1,0 +1,46 @@
+هيكل المشروع Project Structure Diagram
+
+project_root/
+│
+├── config/
+│   └── database.php
+│
+├── includes/
+│   ├── header.php
+│   ├── footer.php
+│   └── functions.php
+│   └── employee_topnav.php
+│   └── topnav.php
+│
+├── assets/
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   └── main.js
+│   │   └── admin-dashboard.js
+│   │   └── employee-dashboard.js
+│   │   └── potential_clients.js
+│   │   └── projecs.js
+│   │   └── team.js
+│   │   └── visits.js
+│   └── images/
+│
+├── admin/
+│   ├── dashboard.php
+│   ├── projects.php
+│   ├── team.php
+│   └── reports.php
+│   └── potential_clients.php
+│
+├── employee/
+│   ├── dashboard.php
+│   ├── statistics.php
+│   ├── visits.php
+│   └── potential_clients.php
+│   └── entry.php
+│
+├── auth/
+│   ├── login.php
+│   └── logout.php
+│
+└── index.php

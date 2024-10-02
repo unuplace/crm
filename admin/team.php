@@ -4,7 +4,7 @@ require_once '../config/database.php';
 
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: /telad/auth/login.php');
+    header('Location: /crm/auth/login.php');
     exit();
 }
 
@@ -260,7 +260,7 @@ if ($employees === null) {
 <script>
 function editEmployee(id) {
     $.ajax({
-        url: '/telad/api/get_employee.php',
+        url: '/crm/api/get_employee.php',
         type: 'GET',
         data: { id: id },
         dataType: 'json',
@@ -289,7 +289,7 @@ function editEmployee(id) {
     $('#editEmployeeForm').on('submit', function(e) {
     e.preventDefault();
     $.ajax({
-        url: '/telad/api/update_employee.php',
+        url: '/crm/api/update_employee.php',
         type: 'POST',
         data: $(this).serialize(),
         dataType: 'json',

@@ -4,7 +4,7 @@ require_once '../config/database.php';
 
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: /telad/auth/login.php');
+    header('Location: /crm/auth/login.php');
     exit();
 }
 
@@ -200,7 +200,7 @@ $employees = get_all_employees($pdo);
                         <th>الإجراءات</th>
                     </tr>
                 </thead>
-                <tbody>
+                <!-- <tbody>
                     <?php foreach ($potential_clients as $client): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($client['name']); ?></td>
@@ -231,7 +231,41 @@ $employees = get_all_employees($pdo);
                         </td>
                     </tr>
                     <?php endforeach; ?>
-                </tbody>
+                </tbody> -->
+
+                <tbody>
+    <?php foreach ($potential_clients as $client): ?>
+    <tr>
+        <td><a href="client_details.php?id=<?php echo $client['id']; ?>"><?php echo htmlspecialchars($client['name']); ?></a></td>
+        <td><?php echo htmlspecialchars($client['phone']); ?></td>
+        <td><a href="#" class="editable" data-type="text" data-pk="<?php echo $client['id']; ?>" data-name="email"><?php echo htmlspecialchars($client['email']); ?></a></td>
+        <td><a href="#" class="editable" data-type="number" data-pk="<?php echo $client['id']; ?>" data-name="salary"><?php echo htmlspecialchars($client['salary']); ?></a></td>
+        <td><a href="#" class="editable" data-type="number" data-pk="<?php echo $client['id']; ?>" data-name="monthly_commitment"><?php echo htmlspecialchars($client['monthly_commitment']); ?></a></td>
+        <td><a href="#" class="editable" data-type="text" data-pk="<?php echo $client['id']; ?>" data-name="bank"><?php echo htmlspecialchars($client['bank']); ?></a></td>
+        <td><a href="#" class="editable" data-type="text" data-pk="<?php echo $client['id']; ?>" data-name="sector"><?php echo htmlspecialchars($client['sector']); ?></a></td>
+        <td><a href="#" class="editable" data-type="select" data-pk="<?php echo $client['id']; ?>" data-name="status" data-source='{"جديد":"جديد","متابعة":"متابعة","مهتم":"مهتم","غير مهتم":"غير مهتم","تم الحجز":"تم الحجز","تم البيع":"تم البيع"}'><?php echo htmlspecialchars($client['status']); ?></a></td>
+        <td><a href="#" class="editable" data-type="text" data-pk="<?php echo $client['id']; ?>" data-name="source"><?php echo htmlspecialchars($client['source']); ?></a></td>
+                        <td><a href="#" class="editable" data-type="text" data-pk="<?php echo $client['id']; ?>" data-name="notes"><?php echo htmlspecialchars($client['notes']); ?></a></td>
+
+                        <td>
+                            <a href="#" class="editable" data-type="select" data-pk="<?php echo $client['id']; ?>" data-name="assigned_to" data-source='<?php echo json_encode(array_reduce($employees, function($result, $employee) {
+                                $result[$employee['id']] = $employee['full_name'];
+                                return $result;
+                            }, [])); ?>'>
+                                <?php echo htmlspecialchars(get_employee_name($pdo, $client['assigned_to'])); ?>
+                            </a>
+                        </td>
+        <td><a href="#" class="editable" data-type="date" data-pk="<?php echo $client['id']; ?>" data-name="contact_date"><?php echo htmlspecialchars($client['contact_date']); ?></a></td>
+        <td>
+            <form method="POST" class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذا العميل المحتمل؟');">
+                <input type="hidden" name="client_id" value="<?php echo $client['id']; ?>">
+                <button type="submit" name="delete_client" class="btn btn-sm btn-danger">حذف</button>
+            </form>
+        </td>
+    </tr>
+    <?php endforeach; ?>
+</tbody>
+
             </table>
         </div>
     </div>
@@ -245,7 +279,7 @@ $employees = get_all_employees($pdo);
         $.fn.editable.defaults.ajaxOptions = {method: "POST"};
         
         $('.editable').editable({
-            url: '/telad/api/update_client_field.php',
+            url: '/crm/api/update_client_field.php',
             params: function(params) {
                 params.admin_id = <?php echo $_SESSION['user_id']; ?>;
                 return params;

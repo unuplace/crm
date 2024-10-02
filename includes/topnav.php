@@ -19,6 +19,9 @@
           <a class="nav-link <?php echo ($_SERVER['PHP_SELF'] == '/crm/admin/potential_clients.php') ? 'active' : ''; ?>" href="/crm/admin/potential_clients.php">العملاء المحتملين</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link <?php echo ($_SERVER['PHP_SELF'] == '/crm/admin/lost_opportunities.php') ? 'active' : ''; ?>" href="/crm/admin/lost_opportunities.php">الفرص الضائعة</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link <?php echo ($_SERVER['PHP_SELF'] == '/crm/admin/reports.php') ? 'active' : ''; ?>" href="/crm/admin/reports.php">التقارير</a>
         </li>
       </ul>

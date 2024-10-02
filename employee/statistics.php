@@ -4,7 +4,7 @@ require_once '../config/database.php';
 
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'employee') {
-    header('Location: /telad/auth/login.php');
+    header('Location: /crm/auth/login.php');
     exit();
 }
 
@@ -13,7 +13,7 @@ $employee_id = $_SESSION['user_id'];
 $start_date = $_GET['start_date'] ?? date('Y-m-01');
 $end_date = $_GET['end_date'] ?? date('Y-m-d');
 
-$stats = get_employee_statistics($pdo, $employee_id, $start_date, $end_date);
+// $stats = get_employee_statistics($pdo, $employee_id, $start_date, $end_date);
 
 
 // الكود الجديد

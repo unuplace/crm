@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: 25 سبتمبر 2024 الساعة 18:57
+-- Generation Time: 02 أكتوبر 2024 الساعة 20:03
 -- إصدار الخادم: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -91,15 +91,49 @@ CREATE TABLE `customers` (
   `bank` varchar(100) DEFAULT NULL,
   `sector` varchar(100) DEFAULT NULL,
   `assigned_to` int(11) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `source` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- إرجاع أو استيراد بيانات الجدول `customers`
 --
 
-INSERT INTO `customers` (`id`, `name`, `email`, `phone`, `monthly_commitment`, `bank`, `sector`, `assigned_to`, `created_at`) VALUES
-(1, 'عميل طازه', 'asim1a@hotmail.com', '9999999', 1000.00, 'الراجحي', 'حكومي', 3, '2024-09-25 16:44:43');
+INSERT INTO `customers` (`id`, `name`, `email`, `phone`, `monthly_commitment`, `bank`, `sector`, `assigned_to`, `created_at`, `source`) VALUES
+(1, 'عميل طازه', 'asim1a@hotmail.com', '9999999', 1000.00, 'الراجحي', 'حكومي', 3, '2024-09-25 16:44:43', '');
+
+-- --------------------------------------------------------
+
+--
+-- بنية الجدول `lost_opportunities`
+--
+
+CREATE TABLE `lost_opportunities` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `email` varchar(128) DEFAULT NULL,
+  `salary` decimal(10,2) DEFAULT NULL,
+  `monthly_commitment` decimal(10,2) DEFAULT NULL,
+  `bank` text DEFAULT NULL,
+  `sector` text DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `contact_date` date DEFAULT NULL,
+  `assigned_to` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `lost_opportunities`
+--
+
+INSERT INTO `lost_opportunities` (`id`, `name`, `phone`, `email`, `salary`, `monthly_commitment`, `bank`, `sector`, `notes`, `contact_date`, `assigned_to`, `created_at`) VALUES
+(1, 'عميل جديد', '059999999', 'engineer@engineer.com', 10000.00, 2000.00, 'الراجحي', 'عسكري', 'لايوجد', '0000-00-00', 3, '2024-10-02 02:24:07'),
+(2, 'عميل جديد', '059999999', 'engineer@engineer.com', 10000.00, 2000.00, 'الراجحي', 'عسكري', 'لايوجد', '0000-00-00', 3, '2024-10-02 02:24:22'),
+(3, 'عميل جديد', '059999999', 'engineer@engineer.com', 10000.00, 2000.00, 'الراجحي', 'عسكري', 'لايوجد', '0000-00-00', 3, '2024-10-02 02:26:56'),
+(4, 'عميل جديد', '059999999', 'engineer@engineer.com', 10000.00, 2000.00, 'الراجحي', 'عسكري', 'لايوجد', '0000-00-00', 3, '2024-10-02 02:31:41'),
+(5, 'عميل جديد', '059999999', 'engineer@engineer.com', 10000.00, 2000.00, 'الراجحي', 'عسكري', 'لايوجد', '0000-00-00', 3, '2024-10-02 16:28:48'),
+(6, 'عميل جديد', '059999999', 'engineer@engineer.com', 10000.00, 2000.00, 'الراجحي', 'عسكري', 'لايوجد', '0000-00-00', 3, '2024-10-02 16:29:57');
 
 -- --------------------------------------------------------
 
@@ -120,17 +154,18 @@ CREATE TABLE `potential_clients` (
   `contact_date` date DEFAULT NULL,
   `assigned_to` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `email` varchar(128) DEFAULT NULL
+  `email` varchar(128) DEFAULT NULL,
+  `source` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- إرجاع أو استيراد بيانات الجدول `potential_clients`
 --
 
-INSERT INTO `potential_clients` (`id`, `name`, `phone`, `salary`, `monthly_commitment`, `bank`, `sector`, `status`, `notes`, `contact_date`, `assigned_to`, `created_at`, `email`) VALUES
-(30, 'عميل جديد', '059999999', 10000.00, 2000.00, 'الراجحي', 'عسكري', 'مهتم', 'لايوجد', '0000-00-00', 3, '2024-09-24 19:05:43', 'engineer@engineer.com'),
-(31, 'احمد', '0999599993', 10000.00, 200.00, 'البنك', 'عسكري', 'مهتم', 'مهتم', '0000-00-00', 3, '2024-09-25 00:04:10', 'asim1a@hotmail.com'),
-(32, 'عميل طازه', '9999999', 40000.00, 1000.00, 'الراجحي', 'حكومي', 'تم البيع', 'بدون ب', '0000-00-00', 3, '2024-09-25 13:31:12', 'asim1a@hotmail.com');
+INSERT INTO `potential_clients` (`id`, `name`, `phone`, `salary`, `monthly_commitment`, `bank`, `sector`, `status`, `notes`, `contact_date`, `assigned_to`, `created_at`, `email`, `source`) VALUES
+(30, 'عميل جديد', '059999999', 10000.00, 2000.00, 'الراجحي', 'عسكري', 'مهتم', 'لايوجد', '0000-00-00', 3, '2024-09-24 19:05:43', 'engineer@engineer.com', ''),
+(31, 'احمد', '0999599993', 10000.00, 200.00, 'البنك', 'عسكري', 'مهتم', 'مهتم', '0000-00-00', 3, '2024-09-25 00:04:10', 'asim1a@hotmail.com', ''),
+(32, 'عميل طازه', '9999999', 40000.00, 1000.00, 'الراجحي', 'حكومي', 'تم البيع', 'جديد', '0000-00-00', 3, '2024-09-25 13:31:12', 'asim1a@hotmail.com', '');
 
 -- --------------------------------------------------------
 
@@ -177,7 +212,19 @@ INSERT INTO `projects` (`id`, `name`, `city`, `logo`, `total_units`, `sold_units
 (16, 'مشروع الدمام', '', NULL, 0, 0, 0, '2024-09-22 21:27:11', 'برج سكني في الدمام', '2023-05-01', '2024-11-30', ''),
 (17, 'مشروع الرياض', '', NULL, 0, 0, 0, '2024-09-22 21:28:56', 'مشروع سكني في شمال الرياض', '2023-01-01', '2024-12-31', ''),
 (18, 'مشروع جدة', '', NULL, 0, 0, 0, '2024-09-22 21:28:56', 'مجمع تجاري في وسط جدة', '2023-03-15', '2025-06-30', ''),
-(19, 'مشروع الدمام', '', NULL, 0, 0, 0, '2024-09-22 21:28:56', 'برج سكني في الدمام', '2023-05-01', '2024-11-30', '');
+(19, 'مشروع الدمام', '', NULL, 0, 0, 0, '2024-09-22 21:28:56', 'برج سكني في الدمام', '2023-05-01', '2024-11-30', ''),
+(20, 'مشروعي', 'جدة', '', 599, 0, 4, '2024-09-27 11:37:32', 'note\n', NULL, NULL, 'planned'),
+(21, 'مشروع ضاحي بن خلفان', 'جدة', '', 4000, 0, 9, '2024-09-27 11:43:10', NULL, NULL, NULL, 'planned');
+
+--
+-- القوادح `projects`
+--
+DELIMITER $$
+CREATE TRIGGER `update_remaining_units` BEFORE UPDATE ON `projects` FOR EACH ROW BEGIN
+    SET NEW.remaining_units = NEW.total_units - NEW.sold_units;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -244,20 +291,21 @@ CREATE TABLE `users` (
   `project_id` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `daily_call_target` int(11) DEFAULT NULL,
-  `monthly_sales_target` decimal(10,2) DEFAULT 0.00,
-  `monthly_visit_target` int(11) DEFAULT 0
+  `monthly_sales_target` int(11) DEFAULT NULL,
+  `monthly_visit_target` int(11) DEFAULT NULL,
+  `monthly_call_target` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- إرجاع أو استيراد بيانات الجدول `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `email`, `phone`, `role`, `project_id`, `created_at`, `daily_call_target`, `monthly_sales_target`, `monthly_visit_target`) VALUES
-(1, 'Asim', '$2y$10$JIu/2E4Uk44D8FJ0ZR4m1esQkTjOJnr/axs600oOUp.s60htzKWr.', 'Asim Admin', 'asim@talad.com', '1234567890', 'admin', NULL, '2024-09-22 12:50:05', NULL, 0.00, 0),
-(3, 'waled', '$2y$10$mQuh/O3YTJm0wtw27dRWXuPXBqIutJkIGKpeYNSv6baAvyoOy13Aq', 'وليد', 'asim1a@hotmail.com', '0599115017', 'employee', 1, '2024-09-22 16:26:07', 50, 7.00, 4),
-(5, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'مدير النظام', 'admin@telad.com', '', 'admin', NULL, '2024-09-22 20:54:06', NULL, NULL, NULL),
-(6, 'employee1', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'موظف واحد', 'employee1@telad.com', '', 'employee', 1, '2024-09-22 20:54:06', 20, 28.00, 15),
-(7, 'employee2', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'موظف اثنين', 'employee2@telad.com', '', 'employee', 2, '2024-09-22 20:54:06', 25, 16.00, 20);
+INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `email`, `phone`, `role`, `project_id`, `created_at`, `daily_call_target`, `monthly_sales_target`, `monthly_visit_target`, `monthly_call_target`) VALUES
+(1, 'Asim', '$2y$10$JIu/2E4Uk44D8FJ0ZR4m1esQkTjOJnr/axs600oOUp.s60htzKWr.', 'Asim Admin', 'asim@talad.com', '1234567890', 'admin', NULL, '2024-09-22 12:50:05', NULL, 0, 0, 0),
+(3, 'waled', '$2y$10$mQuh/O3YTJm0wtw27dRWXuPXBqIutJkIGKpeYNSv6baAvyoOy13Aq', 'وليد', 'asim1a@hotmail.com', '0599115017', 'employee', 1, '2024-09-22 16:26:07', 50, 7, 4, 300),
+(5, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'مدير النظام', 'admin@telad.com', '', 'admin', NULL, '2024-09-22 20:54:06', NULL, NULL, NULL, 0),
+(6, 'employee1', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'موظف واحد', 'employee1@telad.com', '', 'employee', 1, '2024-09-22 20:54:06', 20, 28, 15, 0),
+(9, 'Alzubaidi', '$2y$10$kI3JBEKO8JdWoFfx3g9VY.sohgTWjOwFKPqtiaY3mXMQJQZJok6cC', 'عاصم الزبيدي', 'asim1a@hotmail.com', '0599115017', 'employee', 1, '2024-09-26 23:39:52', 30, 15, 4, 800);
 
 -- --------------------------------------------------------
 
@@ -339,6 +387,12 @@ ALTER TABLE `customers`
   ADD KEY `assigned_to` (`assigned_to`);
 
 --
+-- Indexes for table `lost_opportunities`
+--
+ALTER TABLE `lost_opportunities`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `potential_clients`
 --
 ALTER TABLE `potential_clients`
@@ -410,16 +464,22 @@ ALTER TABLE `customers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `lost_opportunities`
+--
+ALTER TABLE `lost_opportunities`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT for table `potential_clients`
 --
 ALTER TABLE `potential_clients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `reservations`
@@ -437,7 +497,7 @@ ALTER TABLE `sales`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `visits`
