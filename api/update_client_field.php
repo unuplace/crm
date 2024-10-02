@@ -42,7 +42,7 @@ function transfer_to_customers($pdo, $client_id, $employee_id) {
 
     if ($client) {
         // إدخال البيانات في جدول العملاء
-        $stmt = $pdo->prepare("INSERT INTO customers (name, email, phone, monthly_commitment, bank, sector, status, notes, contact_date, suorce assigned_to) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO customers (name, email, phone, monthly_commitment, bank, sector, status, notes, contact_date, suorce, assigned_to) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         return $stmt->execute([
             $client['name'],
             $client['email'],
@@ -54,6 +54,7 @@ function transfer_to_customers($pdo, $client_id, $employee_id) {
             $client['notes'],
             $client['contact_date'],
             $client['suorce'],
+            $client['assigned_to'],
             $employee_id
         ]);
     }

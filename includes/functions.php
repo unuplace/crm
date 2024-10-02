@@ -213,8 +213,8 @@ function delete_employee($pdo, $id) {
 // }
 
 function add_potential_client($pdo, $data) {
-    $sql = "INSERT INTO potential_clients (name, phone, email, salary, monthly_commitment, bank, sector, status, notes, contact_date, assigned_to) 
-            VALUES (:name, :phone, :email, :salary, :monthly_commitment, :bank, :sector, :status, :notes, :contact_date, :assigned_to)";
+    $sql = "INSERT INTO potential_clients (name, phone, email, salary, monthly_commitment, bank, sector, status, notes, contact_date, assigned_to, source) 
+            VALUES (:name, :phone, :email, :salary, :monthly_commitment, :bank, :sector, :status, :notes, :contact_date, :assigned_to, :source)";
     $stmt = $pdo->prepare($sql);
     return $stmt->execute([
         ':name' => $data['name'],
@@ -227,7 +227,8 @@ function add_potential_client($pdo, $data) {
         ':status' => $data['status'] ?? 'جديد',
         ':notes' => $data['notes'] ?? null,
         ':contact_date' => $data['contact_date'] ?? date('Y-m-d'),
-        ':assigned_to' => $data['assigned_to'] ?? null
+        ':assigned_to' => $data['assigned_to'] ?? null,
+        ':source' => $data['source']?? null,
     ]);
 }
 
@@ -236,7 +237,7 @@ function update_potential_client($pdo, $data) {
     $sql = "UPDATE potential_clients SET 
             name = :name, phone = :phone, email = :email, salary = :salary, 
             monthly_commitment = :monthly_commitment, bank = :bank, sector = :sector, 
-            status = :status, notes = :notes, contact_date = :contact_date, assigned_to = :assigned_to
+            status = :status, notes = :notes, contact_date = :contact_date, assigned_to = :assigned_to, source = :source
             WHERE id = :client_id";
     $stmt = $pdo->prepare($sql);
     return $stmt->execute([
@@ -251,6 +252,7 @@ function update_potential_client($pdo, $data) {
         ':notes' => $data['notes'],
         ':contact_date' => $data['contact_date'],
         ':assigned_to' => $data['assigned_to'],
+        ':source' => $data['source'],
         ':client_id' => $data['client_id']
     ]);
 }

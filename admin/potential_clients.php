@@ -244,7 +244,7 @@ $employees = get_all_employees($pdo);
         <td><a href="#" class="editable" data-type="text" data-pk="<?php echo $client['id']; ?>" data-name="bank"><?php echo htmlspecialchars($client['bank']); ?></a></td>
         <td><a href="#" class="editable" data-type="text" data-pk="<?php echo $client['id']; ?>" data-name="sector"><?php echo htmlspecialchars($client['sector']); ?></a></td>
         <td><a href="#" class="editable" data-type="select" data-pk="<?php echo $client['id']; ?>" data-name="status" data-source='{"جديد":"جديد","متابعة":"متابعة","مهتم":"مهتم","غير مهتم":"غير مهتم","تم الحجز":"تم الحجز","تم البيع":"تم البيع"}'><?php echo htmlspecialchars($client['status']); ?></a></td>
-        <td><a href="#" class="editable" data-type="text" data-pk="<?php echo $client['id']; ?>" data-name="source"><?php echo htmlspecialchars($client['source']); ?></a></td>
+        <td><a href="#" class="editable" data-type="text" data-pk="<?php echo $client['id']; ?>" data-name="source" data-source='{"أخرى":"أخرى","الحملات":"الحملات","الموقع الالكتروني":"الموقع الالكتروني","مركز المبيعات":"مركز المبيعات","الهاتف":"الهاتف","وسائل تواصل":"وسائل تواصل"}'><?php echo htmlspecialchars($client['source']); ?></a></td>
                         <td><a href="#" class="editable" data-type="text" data-pk="<?php echo $client['id']; ?>" data-name="notes"><?php echo htmlspecialchars($client['notes']); ?></a></td>
 
                         <td>
