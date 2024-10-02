@@ -24,7 +24,7 @@ if (isset($_GET['id'])) {
 }
 
 function get_employee_data($pdo, $employee_id) {
-    $stmt = $pdo->prepare("SELECT id, username, full_name, email, phone, role, project_id, daily_call_target, monthly_call_target, monthly_sales_target, monthly_visit_target FROM users WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT id, username, full_name, email, phone, role, project_id, daily_call_target, monthly_sales_target, monthly_visit_target FROM users WHERE id = ?");
     $stmt->execute([$employee_id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
