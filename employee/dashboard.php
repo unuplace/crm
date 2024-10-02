@@ -10,9 +10,9 @@ require_once '../includes/functions.php';
 //     exit();
 // }
 
-$start_date = date('Y-m-d', strtotime('-30 days')); // آخر 30 يوم
-$end_date = date('Y-m-d');
-$stats = get_employee_statistics($pdo, $_SESSION['user_id'], $start_date, $end_date);
+// $start_date = date('Y-m-d', strtotime('-30 days')); // آخر 30 يوم
+// $end_date = date('Y-m-d');
+// $stats = get_employee_statistics($pdo, $_SESSION['user_id'], $start_date, $end_date);
 
 // الكود الخاص بالإحصائيات هنا
 $employee_id = $_SESSION['user_id'];
@@ -20,7 +20,7 @@ $start_date = $_GET['start_date'] ?? date('Y-m-01');
 $end_date = $_GET['end_date'] ?? date('Y-m-d');
 $employee_data = get_user_data($pdo, $employee_id);
 
-$stats = get_employee_statistics($pdo, $employee_id, $start_date, $end_date);
+// $stats = get_employee_statistics($pdo, $employee_id, $start_date, $end_date);
 
 // الحصول على الأنشطة مع تطبيق التصفية والترقيم
 $visits = get_recent_visits($pdo, $employee_id);

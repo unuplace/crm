@@ -31,6 +31,7 @@ $projects = get_all_projects($pdo);
 //     header('Location: ' . $_SERVER['PHP_SELF']);
 //     exit();
 // }
+
 // معالجة النموذج
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
@@ -103,7 +104,7 @@ if ($employees === null) {
         <td><?php echo htmlspecialchars($employee['role'] ?? ''); ?></td>
         <td><?php echo htmlspecialchars(get_project_name($pdo, $employee['project_id'] ?? null) ?? 'غير محدد'); ?></td>
         <td><?php echo htmlspecialchars($employee['daily_call_target'] ?? '0'); ?></td>
-        <!-- <td><?php echo htmlspecialchars($employee['monthly_call_target'] ?? '0'); ?></td> -->
+        <td><?php echo htmlspecialchars($employee['monthly_call_target'] ?? '0'); ?></td>
         <td><?php echo htmlspecialchars($employee['monthly_sales_target'] ?? '0'); ?></td>
         <td><?php echo htmlspecialchars($employee['monthly_visit_target'] ?? '0'); ?></td>
         <td>
@@ -235,10 +236,10 @@ if ($employees === null) {
                         <label for="edit_daily_call_target" class="form-label">الهدف اليومي (الاتصالات)</label>
                         <input type="number" class="form-control" id="edit_daily_call_target" name="daily_call_target" required>
                     </div>
-                    <!-- <div class="mb-3">
+                    <div class="mb-3">
                         <label for="edit_monthly_call_target" class="form-label">الهدف الشهري (الاتصالات)</label>
                         <input type="number" class="form-control" id="edit_monthly_call_target" name="monthly_call_target" required>
-                    </div> -->
+                    </div>
                     <div class="mb-3">
                         <label for="edit_monthly_sales_target" class="form-label">الهدف الشهري (المبيعات)</label>
                         <input type="number" class="form-control" id="edit_monthly_sales_target" name="monthly_sales_target" required>
@@ -271,7 +272,7 @@ function editEmployee(id) {
             $('#edit_role').val(data.role);
             $('#edit_project_id').val(data.project_id);
             $('#edit_daily_call_target').val(data.daily_call_target);
-            // $('#edit_monthly_call_target').val(data.monthly_call_target);
+            $('#edit_monthly_call_target').val(data.monthly_call_target);
             $('#edit_monthly_sales_target').val(data.monthly_sales_target);
             $('#edit_monthly_visit_target').val(data.monthly_visit_target);
             

@@ -1,28 +1,29 @@
- <?php
-// require_once '../config/database.php';
-// require_once '../includes/functions.php';
+<!-- <?php
+require_once '../config/database.php';
+require_once '../includes/functions.php';
 
-// header('Content-Type: application/json');
+header('Content-Type: application/json');
 
-// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-//     $name = $_POST['name'] ?? '';
-//     $phone = $_POST['phone'] ?? '';
-//     $email = $_POST['email'] ?? '';
-//     $status = $_POST['status'] ?? '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = $_POST['name'] ?? '';
+    $phone = $_POST['phone'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $status = $_POST['status'] ?? '';
     
 
-//     $result = add_potential_client($pdo, $name, $phone, $email, $status);
+    $result = add_potential_client($pdo, $name, $phone, $email, $status);
 
-//     if ($result) {
-//         echo json_encode(['success' => true]);
-//     } else {
-//         echo json_encode(['success' => false, 'message' => 'Failed to add client']);
-//     }
-// } else {
-//     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
-// } 
+    if ($result) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Failed to add client']);
+    }
+} else {
+    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+} -->
 
 
+<?php
 require_once '../includes/functions.php';
 require_once '../config/database.php';
 
