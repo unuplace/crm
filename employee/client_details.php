@@ -36,7 +36,7 @@ if (isset($_GET['id'])) {
 </head>
 <body>
 <?php include '../includes/header.php'; ?>
-<?php include '../includes/topnav.php'; ?>
+<?php include '../includes/employee_topnav.php'; ?>
 
 <div class="container mt-4">
     <h2>تفاصيل العميل</h2>

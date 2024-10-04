@@ -233,8 +233,33 @@ function add_potential_client($pdo, $data) {
 }
 
 
-function update_potential_client($pdo, $data) {
-    $sql = "UPDATE potential_clients SET 
+// function update_potential_client($pdo, $data) {
+//     $sql = "UPDATE potential_clients SET 
+//             name = :name, phone = :phone, email = :email, salary = :salary, 
+//             monthly_commitment = :monthly_commitment, bank = :bank, sector = :sector, 
+//             status = :status, notes = :notes, contact_date = :contact_date, assigned_to = :assigned_to, source = :source
+//             WHERE id = :client_id";
+//     $stmt = $pdo->prepare($sql);
+//     return $stmt->execute([
+//         ':name' => $data['name'],
+//         ':phone' => $data['phone'],
+//         ':email' => $data['email'],
+//         ':salary' => $data['salary'],
+//         ':monthly_commitment' => $data['monthly_commitment'],
+//         ':bank' => $data['bank'],
+//         ':sector' => $data['sector'],
+//         ':status' => $data['status'],
+//         ':notes' => $data['notes'],
+//         ':contact_date' => $data['contact_date'],
+//         ':assigned_to' => $data['assigned_to'],
+//         ':source' => $data['source'],
+//         ':client_id' => $data['client_id']
+//     ]);
+// }
+
+
+function update_client($pdo, $data) {
+    $sql = "UPDATE customers SET 
             name = :name, phone = :phone, email = :email, salary = :salary, 
             monthly_commitment = :monthly_commitment, bank = :bank, sector = :sector, 
             status = :status, notes = :notes, contact_date = :contact_date, assigned_to = :assigned_to, source = :source
@@ -256,6 +281,7 @@ function update_potential_client($pdo, $data) {
         ':client_id' => $data['client_id']
     ]);
 }
+
 
 
 function delete_potential_client($pdo, $client_id) {
@@ -434,11 +460,11 @@ function get_all_projects($pdo) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function update_project_field($pdo, $project_id, $field, $value) {
-    $sql = "UPDATE projects SET $field = :value WHERE id = :project_id";
-    $stmt = $pdo->prepare($sql);
-    return $stmt->execute([':value' => $value, ':project_id' => $project_id]);
-}
+// function update_project_field($pdo, $project_id, $field, $value) {
+//     $sql = "UPDATE projects SET $field = :value WHERE id = :project_id";
+//     $stmt = $pdo->prepare($sql);
+//     return $stmt->execute([':value' => $value, ':project_id' => $project_id]);
+// }
 
 function update_remaining_units($pdo, $project_id) {
     $sql = "UPDATE projects SET remaining_units = total_units - sold_units WHERE id = :project_id";
@@ -812,17 +838,171 @@ function get_all_lost_opportunities($pdo) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function add_attachment($pdo, $client_id, $attachment_name, $attachment_path) {
-    $stmt = $pdo->prepare("INSERT INTO attachments (client_id, name, path) VALUES (?, ?, ?)");
-    return $stmt->execute([$client_id, $attachment_name, $attachment_path]);
+function add_attachment($pdo, $client_id, $attachment_type, $attachment_name, $attachment_path) {
+    $stmt = $pdo->prepare("INSERT INTO attachments (client_id, attachment_type, name, path) VALUES (?, ?, ?, ?)");
+    return $stmt->execute([$client_id, $attachment_type, $attachment_name, $attachment_path]);
 }
+
+function get_attachments($pdo, $client_id, $attachment_type) {
+    $stmt = $pdo->prepare("SELECT * FROM attachments WHERE client_id = ? AND attachment_type = ?");
+    $stmt->execute([$client_id, $attachment_type]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 
 function add_note_to_client($pdo, $client_id, $note) {
     $stmt = $pdo->prepare("INSERT INTO client_notes (client_id, note) VALUES (?, ?)");
     return $stmt->execute([$client_id, $note]);
 }
 
-function add_task_to_client($pdo, $client_id, $task_type, $task_date, $task_time, $task_description) {
-    $stmt = $pdo->prepare("INSERT INTO client_tasks (client_id, task_type, task_date, task_time, description) VALUES (?, ?, ?, ?, ?)");
-    return $stmt->execute([$client_id, $task_type, $task_date, $task_time, $task_description]);
+   function add_task_to_client($pdo, $client_id, $task_type, $task_date, $task_time, $description) {
+       $stmt = $pdo->prepare("INSERT INTO client_tasks (client_id, task_type, task_date, task_time, description) VALUES (?, ?, ?, ?, ?)");
+       return $stmt->execute([$client_id, $task_type, $task_date, $task_time, $description]);
+   }
+
+   function get_client_tasks($pdo, $client_id) {
+    $stmt = $pdo->prepare("SELECT * FROM client_tasks WHERE client_id = ? ORDER BY created_at DESC");
+    $stmt->execute([$client_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+   
+
+function get_all_clients($pdo) {
+    $stmt = $pdo->query("SELECT * FROM customers ORDER BY created_at DESC");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function delete_client($pdo, $client_id) {
+    $stmt = $pdo->prepare("DELETE FROM customers WHERE id = ?");
+    return $stmt->execute([$client_id]);
+}
+
+function get_all_property_types($pdo) {
+    $stmt = $pdo->query("SELECT * FROM property_types ORDER BY created_at DESC");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function update_property_type($pdo, $property_id, $name, $property_usage, $unit_type, $land_area, $building_area, $floors, $bedrooms, $living_rooms, $halls, $bathrooms, $kitchen, $plan_image) {
+    $stmt = $pdo->prepare("UPDATE property_types SET name = ?, property_usage = ?, unit_type = ?, land_area = ?, building_area = ?, floors = ?, bedrooms = ?, living_rooms = ?, halls = ?, bathrooms = ?, kitchen = ?, plan_image = ? WHERE id = ?");
+    return $stmt->execute([$name, $property_usage, $unit_type, $land_area, $building_area, $floors, $living_rooms, $bedrooms, $halls, $bathrooms, $kitchen, $plan_image, $property_id]);
+}
+
+function add_property_type($pdo, $data) {
+    $sql = "INSERT INTO property_types (name, property_usage, unit_type, land_area, building_area, floors, bedrooms, halls, living_rooms, bathrooms, kitchen, plan_image) 
+            VALUES (:name, :property_usage, :unit_type, :land_area, :building_area, :floors, :bedrooms, :halls, :living_rooms, :bathrooms, :kitchen, :plan_image)";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute([
+        ':name' => $data['name'],
+        ':property_usage' => $data['property_usage'],
+        ':unit_type' => $data['unit_type'],
+        ':land_area' => $data['land_area'],
+        ':building_area' => $data['building_area'],
+        ':floors' => $data['floors'],
+        ':bedrooms' => $data['bedrooms'],
+        ':halls' => $data['halls'],
+        ':living_rooms' => $data['living_rooms'],
+        ':bathrooms' => $data['bathrooms'],
+        ':kitchen' => $data['kitchen'],
+        ':plan_image' => $data['plan_image']
+    ]);
+}
+
+function delete_property_type($pdo, $property_id) {
+    $stmt = $pdo->prepare("DELETE FROM property_types WHERE id = ?");
+    return $stmt->execute([$property_id]);
+}
+
+function add_property_type_to_project($pdo, $project_id, $property_type_id, $quantity) {
+    $stmt = $pdo->prepare("INSERT INTO project_property_types (project_id, property_type_id, quantity) VALUES (?, ?, ?)");
+    return $stmt->execute([$project_id, $property_type_id, $quantity]);
+}
+
+function get_property_types_by_project($pdo, $project_id) {
+    $stmt = $pdo->prepare("
+        SELECT pt.*, ppt.quantity 
+        FROM property_types pt
+        JOIN project_property_types ppt ON pt.id = ppt.property_type_id
+        WHERE ppt.project_id = ?
+    ");
+    $stmt->execute([$project_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+function update_project_field($pdo, $project_id, $field, $value) {
+    $allowed_fields = ['name', 'city', 'total_units', 'sold_units', 'design_count', 'description', 'start_date', 'end_date', 'status'];
+    if (!in_array($field, $allowed_fields)) {
+        return false;
+    }
+    
+    $sql = "UPDATE projects SET $field = :value WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute([':value' => $value, ':id' => $project_id]);
+}
+
+function create_properties_for_project($pdo, $project_id) {
+    $property_types = get_property_types_by_project($pdo, $project_id);
+    
+    $pdo->beginTransaction();
+    
+    try {
+        foreach ($property_types as $type) {
+            for ($i = 0; $i < $type['quantity']; $i++) {
+                $serial_number = generate_serial_number($pdo);
+                $sql = "INSERT INTO properties (project_id, property_type_id, serial_number, price, status, readiness) 
+                        VALUES (:project_id, :property_type_id, :serial_number, 0, 'متاح', 'لم يتم البدء')";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([
+                    ':project_id' => $project_id,
+                    ':property_type_id' => $type['id'],
+                    ':serial_number' => $serial_number
+                ]);
+            }
+        }
+        
+        $pdo->commit();
+        return true;
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return false;
+    }
+}
+
+function generate_serial_number($pdo) {
+    do {
+        $serial = sprintf("%04d", mt_rand(0, 9999));
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM properties WHERE serial_number = ?");
+        $stmt->execute([$serial]);
+        $exists = $stmt->fetchColumn();
+    } while ($exists);
+    
+    return $serial;
+}
+
+function get_properties_by_project($pdo, $project_id) {
+    $sql = "SELECT p.*, pt.name as property_type_name 
+            FROM properties p 
+            JOIN property_types pt ON p.property_type_id = pt.id 
+            WHERE p.project_id = :project_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':project_id' => $project_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function get_property_name($pdo, $property_type_id) {
+    $stmt = $pdo->prepare("SELECT name FROM property_types WHERE id = ?");
+    $stmt->execute([$property_type_id]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result ? $result['name'] : 'غير محدد';
+}
+
+function update_property($pdo, $property_id, $field, $value) {
+    $allowed_fields = ['serial_number', 'price', 'status', 'readiness'];
+    if (!in_array($field, $allowed_fields)) {
+        return false; // Invalid field
+    }
+
+    $sql = "UPDATE properties SET $field = :value WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute([':value' => $value, ':id' => $property_id]);
 }

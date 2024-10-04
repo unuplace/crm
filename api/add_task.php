@@ -13,12 +13,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $task_type = $_POST['task_type'];
     $task_date = $_POST['task_date'];
     $task_time = $_POST['task_time'];
-    $task_description = $_POST['task_description'];
+    $description = $_POST['task_description'];
 
-    $result = add_task_to_client($pdo, $client_id, $task_type, $task_date, $task_time, $task_description);
+    $result = add_task_to_client($pdo, $client_id, $task_type, $task_date, $task_time, $description);
     if ($result) {
-        header("Location: client_details.php?id=$client_id");
-        exit();
+        echo json_encode(['success' => true]);
     } else {
         http_response_code(500);
         echo json_encode(['error' => 'Failed to add task']);

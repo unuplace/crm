@@ -10,6 +10,9 @@
           <a class="nav-link <?php echo ($_SERVER['PHP_SELF'] == '/crm/admin/dashboard.php') ? 'active' : ''; ?>" href="/crm/admin/dashboard.php">لوحة التحكم</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link <?php echo ($_SERVER['PHP_SELF'] == '/crm/admin/property_types.php') ? 'active' : ''; ?>" href="/crm/admin/property_types.php">نماذج الوحدات</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link <?php echo ($_SERVER['PHP_SELF'] == '/crm/admin/projects.php') ? 'active' : ''; ?>" href="/crm/admin/projects.php">المشاريع</a>
         </li>
         <li class="nav-item">
@@ -17,6 +20,9 @@
         </li>
         <li class="nav-item">
           <a class="nav-link <?php echo ($_SERVER['PHP_SELF'] == '/crm/admin/potential_clients.php') ? 'active' : ''; ?>" href="/crm/admin/potential_clients.php">العملاء المحتملين</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <?php echo ($_SERVER['PHP_SELF'] == '/crm/admin/clients_list.php') ? 'active' : ''; ?>" href="/crm/admin/clients_list.php">العملاء</a>
         </li>
         <li class="nav-item">
           <a class="nav-link <?php echo ($_SERVER['PHP_SELF'] == '/crm/admin/lost_opportunities.php') ? 'active' : ''; ?>" href="/crm/admin/lost_opportunities.php">الفرص الضائعة</a>

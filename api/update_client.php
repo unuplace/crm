@@ -14,10 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = $_POST['phone'];
     $email = $_POST['email'];
 
-    $result = update_potential_client($pdo, $client_id, $name, $phone, $email);
+    $result = update_client($pdo, $client_id, $name, $phone, $email);
     if ($result) {
-        header("Location: client_details.php?id=$client_id");
-        exit();
+        echo json_encode(['success' => true]);
     } else {
         http_response_code(500);
         echo json_encode(['error' => 'Failed to update client']);
