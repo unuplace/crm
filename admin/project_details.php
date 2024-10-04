@@ -77,6 +77,20 @@ if (isset($_GET['id'])) {
             <?php endforeach; ?>
         </div>
 
+
+
+        <div class="row">
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                        <a href="maps.php?id=<?php echo $project['id']; ?>">خريطة <?php echo htmlspecialchars($project['name']); ?></a>
+
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+
         <h3>العقارات المرتبطة</h3>
         <div class="table-responsive">
             <table class="table table-striped">

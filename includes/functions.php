@@ -1006,3 +1006,40 @@ function update_property($pdo, $property_id, $field, $value) {
     $stmt = $pdo->prepare($sql);
     return $stmt->execute([':value' => $value, ':id' => $property_id]);
 }
+
+function get_map_by_project($pdo, $project_id) {
+    $stmt = $pdo->prepare("SELECT * FROM maps WHERE project_id = ?");
+    $stmt->execute([$project_id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function upload_map_image($pdo, $project_id, $image) {
+    $target_dir = "../uploads/maps/";
+    $target_file = $target_dir . basename($image["name"]);
+    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+    // Check if image file is a actual image or fake image
+    $check = getimagesize($image["tmp_name"]);
+    if($check === false) {
+        return false; // Not an image
+    }
+
+    // Check file size
+    if ($image["size"] > 500000) {
+        return false; // File is too large
+    }
+
+    // Allow certain file formats
+    if(!in_array($imageFileType, ['jpg', 'png', 'jpeg'])) {
+        return false; // Invalid file format
+    }
+
+    // Try to upload file
+    if (move_uploaded_file($image["tmp_name"], $target_file)) {
+        // Save the image path in the database
+        $stmt = $pdo->prepare("INSERT INTO maps (project_id, map_image) VALUES (?, ?)");
+        return $stmt->execute([$project_id, basename($image["name"])]);
+    } else {
+        return false; // Error uploading file
+    }
+}
